@@ -1,0 +1,6 @@
+framework module Pods_Instogrom {
+  umbrella header "Pods-Instogrom-umbrella.h"
+
+  export *
+  module * { export * }
+}
