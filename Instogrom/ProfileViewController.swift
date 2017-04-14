@@ -44,10 +44,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 
-                DispatchQueue.main.async {
-                    let url = URL(string: value?[self.PHOTO_URL] as! String)
-                    self.showPhoto(url: url!)
+                if value?[self.PHOTO_URL] != nil {
+                    DispatchQueue.main.async {
+                        let url = URL(string: value?[self.PHOTO_URL] as! String)
+                        self.showPhoto(url: url!)
+                    }
                 }
+                
             }) { (error) in
                 print(error.localizedDescription)
             }
@@ -96,12 +99,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             return
         }
         
+        let user = (FIRAuth.auth()?.currentUser)!
+        
         //        let imageData = UIImagePNGRepresentation(image)
         if let imageData = UIImageJPEGRepresentation(image, 0.7) {
             let metadata = FIRStorageMetadata()
             metadata.contentType = "image/jpeg"
             
-            let imageRef = FIRStorage.storage().reference().child("user.jpg")
+            let imageRef = FIRStorage.storage().reference().child("\(user.uid).jpg")
             
             SVProgressHUD.setDefaultMaskType(.black)
             SVProgressHUD.showProgress(0, status: "Uploading...")

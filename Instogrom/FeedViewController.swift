@@ -15,6 +15,7 @@ import SVProgressHUD
 
 class FeedViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    let USERS: String = "users"
     let POSTS: String = "posts"
     let AUTHOR_UID: String = "authorUID"
     let EMAIL: String = "email"
@@ -23,6 +24,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     let POST_DATE: String = "postDate"
     let POST_DATE_REVERSED: String = "postDateReversed"
     let POST_IMAGES: String = "post_images"
+    let PHOTO_URL: String = "photo_url"
     
     let dateFormatter = DateFormatter()
     
@@ -53,6 +55,22 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
             
             cell.postKey = snapshot.key
             if let postData = snapshot.value as? [String: Any] {
+                
+                self.ref.child(self.USERS).child(postData[self.AUTHOR_UID] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
+                    let value = snapshot.value as? NSDictionary
+                    
+                    if value?[self.PHOTO_URL] != nil {
+                        DispatchQueue.main.async {
+                            let imageURLString = value?[self.PHOTO_URL] as! String
+                            let url = URL(string: imageURLString)!
+                            cell.userPhoto.sd_setImage(with: url)
+                        }
+                    }
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+                
                 cell.email.text = postData[self.EMAIL] as? String
                 debugPrint("\(postData[self.POST_DATE]!)")
                 let postDate = (postData[self.POST_DATE] as! Int) / 1000

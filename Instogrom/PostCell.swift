@@ -12,6 +12,7 @@ class PostCell: UITableViewCell {
     
     var postKey: String = ""
     
+    @IBOutlet weak var userPhoto: UIImageView!
     @IBOutlet weak var email: UILabel!
     @IBOutlet weak var publishTime: UILabel!
     @IBOutlet weak var photoImage: UIImageView!
