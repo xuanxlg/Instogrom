@@ -72,13 +72,18 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 }
                 
                 cell.email.text = postData[self.EMAIL] as? String
+                
                 debugPrint("\(postData[self.POST_DATE]!)")
                 let postDate = (postData[self.POST_DATE] as! Int) / 1000
                 cell.publishTime.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(postDate)))
                 
+                cell.likeImage.isHidden = true
+                
                 let imageURLString = postData[self.IMAGE_URL] as! String
                 let imageURL = URL(string: imageURLString)!
                 cell.photoImage.sd_setImage(with: imageURL)
+                
+                cell.postContent.text = "text"
             }
             
             self.refreshControl?.endRefreshing()
