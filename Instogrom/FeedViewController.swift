@@ -81,6 +81,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 cell.photoImage.sd_setImage(with: imageURL)
             }
             
+            self.refreshControl?.endRefreshing()
             return cell
         }
 //        ref.observe(.value, with: { snapshot in
