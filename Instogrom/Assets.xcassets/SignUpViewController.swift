@@ -16,6 +16,7 @@ class SignUpViewController: UIViewController {
     let IS_EMAIL_VERIFIED: String = "is_email_verified"
     let DISPLAY_NAME: String = "display_name"
     let PROVIDER_ID: String = "provider_id"
+    let PHOTO_URL: String = "photo_url"
     let REFRESH_TOKEN: String = "refresh_token"
     let SIGN_UP_TIME: String = "sign_up_time"
     
@@ -70,6 +71,7 @@ class SignUpViewController: UIViewController {
             userInfo[self.IS_EMAIL_VERIFIED] = user.isEmailVerified as Any
             userInfo[self.DISPLAY_NAME] = user.displayName as Any
             userInfo[self.PROVIDER_ID] = user.providerID as Any
+            userInfo[self.PHOTO_URL] = user.photoURL as Any
             userInfo[self.REFRESH_TOKEN] = user.refreshToken as Any
             userInfo[self.SIGN_UP_TIME] = self.dateFormatter.string(from: Date()) as Any
             newUser[user.uid] = userInfo

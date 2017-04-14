@@ -1,64 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8H2-KJ-o2F">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="tDs-hi-Y32">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Main View Controller-->
-        <scene sceneID="gI4-pS-oV4">
-            <objects>
-                <viewController id="naj-Ag-wIV" customClass="MainViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="r60-IH-aeM"/>
-                        <viewControllerLayoutGuide type="bottom" id="J3S-9F-94P"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="PT7-AA-5NR">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NyD-Oj-Y3v">
-                                <rect key="frame" x="130" y="269" width="60" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Sign Out"/>
-                                <connections>
-                                    <action selector="signOut:" destination="naj-Ag-wIV" eventType="touchUpInside" id="NM2-LF-tpV"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tsy-33-QtC">
-                                <rect key="frame" x="140" y="347" width="41" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Photo"/>
-                                <connections>
-                                    <action selector="photo:" destination="naj-Ag-wIV" eventType="touchUpInside" id="HVp-P9-fD1"/>
-                                </connections>
-                            </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pEy-H9-CK1">
-                                <rect key="frame" x="40" y="28" width="240" height="240"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="240" id="LLf-SM-Ej5"/>
-                                    <constraint firstAttribute="width" constant="240" id="RLv-Ti-rb3"/>
-                                </constraints>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="pEy-H9-CK1" firstAttribute="centerX" secondItem="PT7-AA-5NR" secondAttribute="centerX" id="5X5-5x-1Zh"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="imageView" destination="pEy-H9-CK1" id="Gy3-qe-hLc"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eiT-90-I2C" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-257" y="801"/>
-        </scene>
         <!--Instogrom-->
         <scene sceneID="ejV-uA-P7m">
             <objects>
@@ -146,11 +99,6 @@
                                 <action selector="photo:" destination="jAD-b4-bKp" id="bSY-wH-BNP"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="SignOut" id="TzM-G3-eGA">
-                            <connections>
-                                <action selector="signOut:" destination="jAD-b4-bKp" id="sQM-LY-B8Y"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="FVq-3c-U0N" id="eIN-zF-T5c"/>
@@ -158,7 +106,70 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y1v-pm-Ipu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1733" y="801"/>
+            <point key="canvasLocation" x="2032.5" y="786.97183098591552"/>
+        </scene>
+        <!--Profile-->
+        <scene sceneID="pDk-jZ-scr">
+            <objects>
+                <viewController id="iSl-fZ-g7v" customClass="ProfileViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="TR9-YG-SgF"/>
+                        <viewControllerLayoutGuide type="bottom" id="ycl-Pb-Lm6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="m0y-Hq-Zdn">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="2n0-m7-i0C">
+                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person_icon" translatesAutoresizingMaskIntoConstraints="NO" id="yQa-k5-CQM">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="455"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="yQa-k5-CQM" secondAttribute="height" multiplier="1:1" id="wJj-i0-XTd"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="yQa-k5-CQM" firstAttribute="leading" secondItem="2n0-m7-i0C" secondAttribute="leading" id="cln-7N-Fyq"/>
+                                    <constraint firstAttribute="trailing" secondItem="yQa-k5-CQM" secondAttribute="trailing" id="wuO-Qv-fcS"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="bottomMargin" secondItem="2n0-m7-i0C" secondAttribute="bottom" constant="49" id="IPA-Th-yWP"/>
+                            <constraint firstItem="2n0-m7-i0C" firstAttribute="leading" secondItem="m0y-Hq-Zdn" secondAttribute="leading" id="isa-Us-vV4"/>
+                            <constraint firstItem="2n0-m7-i0C" firstAttribute="top" secondItem="m0y-Hq-Zdn" secondAttribute="topMargin" constant="64" id="jw4-Pf-Y7g"/>
+                            <constraint firstAttribute="trailing" secondItem="2n0-m7-i0C" secondAttribute="trailing" id="lYr-2h-8DC"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Profile" id="vRf-it-BXD">
+                        <leftBarButtonItems>
+                            <barButtonItem systemItem="camera" id="UWu-CN-J9g">
+                                <connections>
+                                    <action selector="photo:" destination="iSl-fZ-g7v" id="AYg-bV-8Nv"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="reset_password" id="Fip-6e-5qp">
+                                <connections>
+                                    <action selector="resetPassword:" destination="iSl-fZ-g7v" id="zUS-tf-ffy"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" image="sign_out" id="GSz-4r-Vah">
+                            <connections>
+                                <action selector="signOutButton:" destination="iSl-fZ-g7v" id="aUq-Lv-cCA"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="userIcon" destination="yQa-k5-CQM" id="Ecc-14-fBH"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7T7-GB-QyQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2032.5" y="1578.1690140845071"/>
         </scene>
         <!--Sign In View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -320,10 +331,11 @@
             </objects>
             <point key="canvasLocation" x="37.5" y="12.67605633802817"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--HOME-->
         <scene sceneID="SP0-J8-9AZ">
             <objects>
-                <navigationController storyboardIdentifier="MainFlow" automaticallyAdjustsScrollViewInsets="NO" id="8H2-KJ-o2F" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="8H2-KJ-o2F" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" tag="1" title="HOME" image="home" id="ajA-Nh-eg6"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="6D0-8L-g9V">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -336,7 +348,52 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qx9-bM-2sl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="721.875" y="800.70422535211264"/>
+            <point key="canvasLocation" x="1035" y="786.97183098591552"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="6cO-P1-AlE">
+            <objects>
+                <tabBarController storyboardIdentifier="MainFlow" automaticallyAdjustsScrollViewInsets="NO" id="tDs-hi-Y32" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="knV-AR-XfK">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="8H2-KJ-o2F" kind="relationship" relationship="viewControllers" id="7VX-FY-oPW"/>
+                        <segue destination="A3d-9c-SC4" kind="relationship" relationship="viewControllers" id="ge4-7l-WUH"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JIc-2A-6sa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="37.5" y="786.97183098591552"/>
+        </scene>
+        <!--PROFILE-->
+        <scene sceneID="l7X-JV-Chp">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="A3d-9c-SC4" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="PROFILE" image="profile" id="KKI-nd-mcX"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0Se-Q8-bVx">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="iSl-fZ-g7v" kind="relationship" relationship="rootViewController" id="LYN-w3-d1k"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cFZ-3L-Utx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1035" y="1580"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="home" width="32" height="32"/>
+        <image name="person_icon" width="225" height="225"/>
+        <image name="profile" width="30" height="30"/>
+        <image name="reset_password" width="32" height="32"/>
+        <image name="sign_out" width="32" height="32"/>
+    </resources>
 </document>

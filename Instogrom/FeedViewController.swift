@@ -118,11 +118,6 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
             }
         }
     }
-
-
-    @IBAction func signOut(_ sender: Any) {
-        try! FIRAuth.auth()?.signOut()
-    }
     
     @IBAction func photo(_ sender: Any) {
         let picker = UIImagePickerController()
