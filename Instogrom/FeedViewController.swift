@@ -81,7 +81,11 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 let likes = (postData[self.LIKE_POST] as? [String: Any])?.count
                 if likes != nil {
                     if likes! > 0 {
-                        cell.likesCount.text = "\(likes!)"
+                        if likes! > 99 {
+                            cell.likesCount.text = "99+"
+                        } else {
+                            cell.likesCount.text = "\(likes!)"
+                        }
                         cell.likeImage.isHidden = false
                     } else {
                         cell.likeImage.isHidden = true
