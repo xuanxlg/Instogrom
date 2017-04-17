@@ -25,6 +25,8 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     let POST_DATE_REVERSED: String = "postDateReversed"
     let POST_IMAGES: String = "post_images"
     let PHOTO_URL: String = "photo_url"
+    let LIKE_POST: String = "like_post"
+    let LIKE_DATE: String = "like_date"
     
     let dateFormatter = DateFormatter()
     
@@ -55,7 +57,6 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
             
             cell.postKey = snapshot.key
             if let postData = snapshot.value as? [String: Any] {
-                
                 self.ref.child(self.USERS).child(postData[self.AUTHOR_UID] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
                     let value = snapshot.value as? NSDictionary
                     
@@ -77,13 +78,37 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 let postDate = (postData[self.POST_DATE] as! Int) / 1000
                 cell.publishTime.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(postDate)))
                 
-                cell.likeImage.isHidden = true
+                let likes = (postData[self.LIKE_POST] as? [String: Any])?.count
+                if likes != nil {
+                    if likes! > 0 {
+                        cell.likesCount.text = "\(likes!)"
+                        cell.likeImage.isHidden = false
+                    } else {
+                        cell.likeImage.isHidden = true
+                    }
+                } else {
+                    cell.likeImage.isHidden = true
+                }
+                
+                self.ref.child(self.POSTS).child(cell.postKey).child(self.LIKE_POST).child((FIRAuth.auth()?.currentUser)!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                    
+                    let userLiked = snapshot.value as? [String: Any]!
+                    
+                    if userLiked == nil {
+                        cell.currentUserIsLike = false
+                    } else {
+                        cell.currentUserIsLike = true
+                    }
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
                 
                 let imageURLString = postData[self.IMAGE_URL] as! String
                 let imageURL = URL(string: imageURLString)!
                 cell.photoImage.sd_setImage(with: imageURL)
                 
-                cell.postContent.text = "text"
+                cell.postContent.isHidden = true
             }
             
             self.refreshControl?.endRefreshing()
@@ -117,6 +142,30 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 debugPrint("selectedCell.publishTime: \(selectedCell.publishTime.text!)")
                 
                 let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+                
+                let user = (FIRAuth.auth()?.currentUser)!
+                
+                var likePostTitle = "Like / Unlike this Post"
+                if selectedCell.currentUserIsLike {
+                    likePostTitle = "Unlike this Post"
+                } else {
+                    likePostTitle = "Like this Post"
+                }
+                
+                let likeAction = UIAlertAction(title: likePostTitle, style: .default) { anctopn in
+                    var post = [String: Any]()
+                    var content = [String: Any]()
+                    content[self.LIKE_DATE] = self.dateFormatter.string(from: Date())
+                    post[user.uid] = content
+                    
+                    if selectedCell.currentUserIsLike {
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.LIKE_POST).child(user.uid).removeValue()
+                    } else {
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.LIKE_POST).updateChildValues(post)
+                    }
+                    
+                }
+                actionSheet.addAction(likeAction)
                 
                 let deleteAction = UIAlertAction(title: "Delete", style: .default) { anctopn in
                     self.ref.child(self.POSTS).child(selectedCell.postKey).removeValue()
