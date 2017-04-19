@@ -11,7 +11,9 @@ import UIKit
 class PostCell: UITableViewCell {
     
     var postKey: String = ""
+    var author: String = ""
     var currentUserIsLike = false
+    var comments: Int = 0
     
     @IBOutlet weak var userPhoto: UIImageView!
     @IBOutlet weak var email: UILabel!
@@ -21,4 +23,6 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var likesCount: UILabel!
     @IBOutlet weak var postContent: UILabel!
     
+    @IBOutlet weak var commentView: UIView!
+    @IBOutlet weak var commentsCount: UILabel!
 }

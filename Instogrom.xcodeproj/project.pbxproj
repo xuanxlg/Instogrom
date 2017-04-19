@@ -17,6 +17,8 @@
 		354DBA3A1E893E3A00AC3726 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354DBA391E893E3A00AC3726 /* SignInViewController.swift */; };
 		354DBA3C1E89486800AC3726 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354DBA3B1E89486800AC3726 /* SignUpViewController.swift */; };
 		3551E36F1E9CE3DD00673D80 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3551E36E1E9CE3DD00673D80 /* ProfileViewController.swift */; };
+		355C01251EA6161800B1DAE7 /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355C01241EA6161800B1DAE7 /* CommentsViewController.swift */; };
+		355C01271EA6213C00B1DAE7 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355C01261EA6213C00B1DAE7 /* CommentCell.swift */; };
 		749F33DD9F30DFDF5096D075 /* Pods_Instogrom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C019169F970C2C109EBC824 /* Pods_Instogrom.framework */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +54,8 @@
 		354DBA391E893E3A00AC3726 /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		354DBA3B1E89486800AC3726 /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignUpViewController.swift; path = Assets.xcassets/SignUpViewController.swift; sourceTree = "<group>"; };
 		3551E36E1E9CE3DD00673D80 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		355C01241EA6161800B1DAE7 /* CommentsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
+		355C01261EA6213C00B1DAE7 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		3C019169F970C2C109EBC824 /* Pods_Instogrom.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instogrom.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87608A516A6F541C971163DB /* Pods-Instogrom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instogrom.release.xcconfig"; path = "Pods/Target Support Files/Pods-Instogrom/Pods-Instogrom.release.xcconfig"; sourceTree = "<group>"; };
 		F2E7D7D14237870FFE5920A4 /* Pods-Instogrom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instogrom.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Instogrom/Pods-Instogrom.debug.xcconfig"; sourceTree = "<group>"; };
@@ -117,6 +121,8 @@
 				354DBA091E8930C400AC3726 /* AppDelegate.swift */,
 				354499421E966CC100D34451 /* PostCell.swift */,
 				354DBA3B1E89486800AC3726 /* SignUpViewController.swift */,
+				355C01261EA6213C00B1DAE7 /* CommentCell.swift */,
+				355C01241EA6161800B1DAE7 /* CommentsViewController.swift */,
 				3551E36E1E9CE3DD00673D80 /* ProfileViewController.swift */,
 				353B599F1E8D3336005D0458 /* FeedViewController.swift */,
 				354DBA391E893E3A00AC3726 /* SignInViewController.swift */,
@@ -328,6 +334,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				354DBA3C1E89486800AC3726 /* SignUpViewController.swift in Sources */,
+				355C01271EA6213C00B1DAE7 /* CommentCell.swift in Sources */,
+				355C01251EA6161800B1DAE7 /* CommentsViewController.swift in Sources */,
 				354DBA0A1E8930C400AC3726 /* AppDelegate.swift in Sources */,
 				353B59A01E8D3336005D0458 /* FeedViewController.swift in Sources */,
 				354DBA3A1E893E3A00AC3726 /* SignInViewController.swift in Sources */,

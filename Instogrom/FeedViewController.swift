@@ -17,6 +17,8 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     
     let USERS: String = "users"
     let POSTS: String = "posts"
+    let COMMENTS: String = "comments"
+    let COMMENT: String = "comment"
     let AUTHOR_UID: String = "authorUID"
     let EMAIL: String = "email"
     let IMAGE_PATH: String = "imagePath"
@@ -25,6 +27,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     let POST_DATE_REVERSED: String = "postDateReversed"
     let POST_IMAGES: String = "post_images"
     let PHOTO_URL: String = "photo_url"
+    let POST_CONTENT: String = "post_content"
     let LIKE_POST: String = "like_post"
     let LIKE_DATE: String = "like_date"
     
@@ -32,14 +35,33 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     
     var ref: FIRDatabaseReference!
     var postsRef: FIRDatabaseReference!
+    var messagesRef: FIRDatabaseReference!
     
     var dataSource: FUITableViewDataSource!
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)
+        let selectedCell = tableView.cellForRow(at: indexPath!) as! PostCell
+        debugPrint("selectedCell.messages: \(selectedCell.comments)")
+        if selectedCell.comments > 0 {
+            if segue.identifier == "showMessages" {
+                let contentVC = segue.destination as! CommentsViewController
+                contentVC.postKey = selectedCell.postKey
+            }
+        } else {
+            
+        }
+        
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         ref = FIRDatabase.database().reference()
         postsRef = ref.child(POSTS)
+        messagesRef = ref.child(COMMENTS)
         
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
@@ -57,6 +79,9 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
             
             cell.postKey = snapshot.key
             if let postData = snapshot.value as? [String: Any] {
+                
+                cell.author = postData[self.AUTHOR_UID] as! String
+                
                 self.ref.child(self.USERS).child(postData[self.AUTHOR_UID] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
                     let value = snapshot.value as? NSDictionary
                     
@@ -86,12 +111,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                         } else {
                             cell.likesCount.text = "\(likes!)"
                         }
-                        cell.likeImage.isHidden = false
-                    } else {
-                        cell.likeImage.isHidden = true
                     }
-                } else {
-                    cell.likeImage.isHidden = true
                 }
                 
                 self.ref.child(self.POSTS).child(cell.postKey).child(self.LIKE_POST).child((FIRAuth.auth()?.currentUser)!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -100,8 +120,38 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                     
                     if userLiked == nil {
                         cell.currentUserIsLike = false
+                        cell.likeImage.isHighlighted = false
+                        cell.likesCount.textColor = UIColor.red
                     } else {
                         cell.currentUserIsLike = true
+                        cell.likeImage.isHighlighted = true
+                        cell.likesCount.textColor = UIColor.white
+                    }
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+                
+                self.ref.child(self.COMMENTS).child(cell.postKey).observeSingleEvent(of: .value, with: { (snapshot) in
+                    
+                    let commentsCount = (snapshot.value as? [String: Any])?.count
+                    
+                    if commentsCount != nil {
+                        if commentsCount! > 0 {
+                            
+                            cell.comments = commentsCount!
+                            
+                            if commentsCount! > 99 {
+                                cell.commentsCount.text = "99+"
+                            } else {
+                                cell.commentsCount.text = "\(commentsCount!)"
+                            }
+                            cell.commentView.isHidden = false
+                        } else {
+                            cell.commentView.isHidden = true
+                        }
+                    } else {
+                        cell.commentView.isHidden = true
                     }
                     
                 }) { (error) in
@@ -112,10 +162,11 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 let imageURL = URL(string: imageURLString)!
                 cell.photoImage.sd_setImage(with: imageURL)
                 
-                cell.postContent.isHidden = true
+                if postData[self.POST_CONTENT] != nil {
+                    cell.postContent.text = postData[self.POST_CONTENT] as? String
+                }
             }
             
-            self.refreshControl?.endRefreshing()
             return cell
         }
 //        ref.observe(.value, with: { snapshot in
@@ -171,19 +222,69 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 }
                 actionSheet.addAction(likeAction)
                 
-                let deleteAction = UIAlertAction(title: "Delete", style: .default) { anctopn in
-                    self.ref.child(self.POSTS).child(selectedCell.postKey).removeValue()
+                let commentAction = UIAlertAction(title: "Comment", style: .default) { anctopn in
+                    let alertController = UIAlertController(title: "Comment this post", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+                    alertController.addTextField { (alertTextField : UITextField) in
+                        alertTextField.placeholder = "your comment"
+                    }
+                    alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+                    let submitAction = UIAlertAction(title: "Submit", style: UIAlertActionStyle.default) { anctopn in
+                        let contentText = alertController.textFields![0].text
+                        
+                        let messageDate = Int(Date().timeIntervalSince1970 * 1000)
+                        
+                        var newMessage = [String: Any]()
+                        var messageInfo = [String: Any]()
+                        messageInfo[self.AUTHOR_UID] = user.uid
+                        messageInfo[self.EMAIL] = user.email as Any
+                        messageInfo[self.COMMENT] = contentText
+                        messageInfo[self.POST_DATE] = messageDate
+                        newMessage[String(messageDate)] = messageInfo
+                        
+                        self.ref.child(self.COMMENTS).child(selectedCell.postKey).updateChildValues(newMessage)
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.COMMENT).setValue(String(messageDate))
+                    }
+                    alertController.addAction(submitAction)
                     
-                    let imageRef = FIRStorage.storage().reference().child("\(self.POST_IMAGES)/\(selectedCell.postKey).jpg")
-                    imageRef.delete { error in
-                        if let error = error {
-                            debugPrint("File Delete Fail: \(error)")
-                        } else {
-                            debugPrint("File Delete Successfully")
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                actionSheet.addAction(commentAction)
+                
+                if selectedCell.author == user.uid {
+                    let contentAction = UIAlertAction(title: "Edit Content", style: .default) { anctopn in
+                        
+                        let alertController = UIAlertController(title: "Edit Content", message: "Please enter post's content", preferredStyle: UIAlertControllerStyle.alert)
+                        alertController.addTextField { (alertTextField : UITextField) in
+                            alertTextField.placeholder = "Enter content"
+                            alertTextField.text = selectedCell.postContent.text
+                        }
+                        alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+                        let submitAction = UIAlertAction(title: "Submit", style: UIAlertActionStyle.default) { anctopn in
+                            let contentText = alertController.textFields![0].text
+                            self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.POST_CONTENT).setValue(contentText)
+                        }
+                        alertController.addAction(submitAction)
+                        
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                    actionSheet.addAction(contentAction)
+                    
+                    
+                    
+                    let deleteAction = UIAlertAction(title: "Delete", style: .default) { anctopn in
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).removeValue()
+                        
+                        let imageRef = FIRStorage.storage().reference().child("\(self.POST_IMAGES)/\(selectedCell.postKey).jpg")
+                        imageRef.delete { error in
+                            if let error = error {
+                                debugPrint("File Delete Fail: \(error)")
+                            } else {
+                                debugPrint("File Delete Successfully")
+                            }
                         }
                     }
+                    actionSheet.addAction(deleteAction)
                 }
-                actionSheet.addAction(deleteAction)
                 
                 let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { anctopn in
                     
@@ -289,5 +390,4 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
         
         dismiss(animated: true, completion: nil)
     }
-    
 }
