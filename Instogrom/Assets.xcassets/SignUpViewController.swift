@@ -45,10 +45,15 @@ class SignUpViewController: UIViewController {
             return
         }
         
+        if password != confirmPassword {
+            print("Confirm password invailid")
+            return
+        }
+        
         FIRAuth.auth()?.createUser(withEmail: email, password: password) { (user, error) in
             
             guard let user = user else {
-                print("Sign Up error: \(error)")
+                print("Sign Up error: \(String(describing: error))")
                 return
             }
             

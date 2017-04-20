@@ -30,7 +30,7 @@ class SignInViewController: UIViewController {
         dateFormatter.timeZone = TimeZone.ReferenceType.local
         
         if FIRAuth.auth()?.currentUser != nil {
-            print("\(FIRAuth.auth()?.currentUser?.email)")
+            print("\(String(describing: FIRAuth.auth()?.currentUser?.email))")
         } else {
             print("User log out")
         }
@@ -46,7 +46,7 @@ class SignInViewController: UIViewController {
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             
             guard let user = user else {
-                print("Sign In error: \(error)")
+                print("Sign In error: \(String(describing: error))")
                 return
             }
             

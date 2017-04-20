@@ -17,6 +17,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     let USERS: String = "users"
     let POSTS: String = "posts"
+    let AUTHOR_UID: String = "authorUID"
     let EMAIL: String = "email"
     let IS_EMAIL_VERIFIED: String = "is_email_verified"
     let DISPLAY_NAME: String = "display_name"
@@ -35,6 +36,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     let dateFormatter = DateFormatter()
     
     var ref: FIRDatabaseReference!
+    var usersRef: FIRDatabaseReference!
+    var postsRef: FIRDatabaseReference!
     
     var dataSource: FUITableViewDataSource!
     
@@ -44,6 +47,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         super.viewDidLoad()
         
         ref = FIRDatabase.database().reference()
+        usersRef = ref.child(USERS)
+        postsRef = ref.child(POSTS)
         
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
@@ -51,7 +56,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             self.userIcon.frame.size = CGSize(width: (self.userIcon.frame.size.width), height: (self.userIcon.frame.size.width))
             
             let user = (FIRAuth.auth()?.currentUser)!
-            self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            self.usersRef.child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
                 
                 self.userId.text = snapshot.key
                 
@@ -78,23 +83,16 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                         self.showPhoto(url: url!)
                     }
                     
-                    if let postsList = userData[self.POSTS] as? NSArray as? [String] {
-                        if postsList.count > 0 {
-                            self.userPostCount.text = "\(postsList.count)"
-                        } else {
-                            self.userPostCount.text = "0"
-                        }
-                    } else {
-                        self.userPostCount.text = "0"
-                    }
-                    
                 }
-                
                 
                 
             }) { (error) in
                 print(error.localizedDescription)
             }
+            
+            self.postsRef.queryOrdered(byChild: self.AUTHOR_UID).queryEqual(toValue: user.uid).observe(.value, with: { snapshot in
+                self.userPostCount.text = ("\(snapshot.childrenCount)")
+            })
         }
         
     }
@@ -165,7 +163,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 debugPrint("Uploaded")
                 
                 let user = (FIRAuth.auth()?.currentUser)!
-                self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                self.usersRef.child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
                     let value = snapshot.value as? NSDictionary
                     
                     var currentUser = [String: Any]()

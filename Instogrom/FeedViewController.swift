@@ -34,8 +34,9 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     let dateFormatter = DateFormatter()
     
     var ref: FIRDatabaseReference!
+    var usersRef: FIRDatabaseReference!
     var postsRef: FIRDatabaseReference!
-    var messagesRef: FIRDatabaseReference!
+    var commentsRef: FIRDatabaseReference!
     
     var dataSource: FUITableViewDataSource!
     
@@ -60,8 +61,9 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
         super.viewDidLoad()
 
         ref = FIRDatabase.database().reference()
+        usersRef = ref.child(USERS)
         postsRef = ref.child(POSTS)
-        messagesRef = ref.child(COMMENTS)
+        commentsRef = ref.child(COMMENTS)
         
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
@@ -82,7 +84,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 
                 cell.author = postData[self.AUTHOR_UID] as! String
                 
-                self.ref.child(self.USERS).child(cell.author).observeSingleEvent(of: .value, with: { (snapshot) in
+                self.usersRef.child(cell.author).observeSingleEvent(of: .value, with: { (snapshot) in
                     
                     if let value = snapshot.value as? [String: Any] {
                         
@@ -91,31 +93,6 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                                 let url = URL(string: imageURLString as! String)!
                                 cell.userPhoto.sd_setImage(with: url)
                             }
-                        }
-                        
-                        
-                        
-                        var content = [String: Any]()
-                        
-                        if let postsList = value[self.POSTS] as? NSArray as? [String] {
-                            if postsList.count > 0 {
-                                var list = postsList
-                                if !list.contains(cell.postKey) {
-                                    list.append(cell.postKey)
-                                    content[self.POSTS] = list
-                                }
-                            } else {
-                                var post: [String] = []
-                                post.append(cell.postKey)
-                                content[self.POSTS] = post
-                            }
-                            
-                            self.ref.child(self.USERS).child(cell.author).updateChildValues(content)
-                        } else {
-                            var post: [String] = []
-                            post.append(cell.postKey)
-                            content[self.POSTS] = post
-                            self.ref.child(self.USERS).child(cell.author).updateChildValues(content)
                         }
                         
                     }
@@ -151,11 +128,15 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                             cell.likesCount.text = "\(likedList.count)"
                         }
                     } else {
+                        cell.currentUserIsLike = false
                         cell.likesCount.isHidden = true
                     }
+                } else {
+                    cell.currentUserIsLike = false
+                    cell.likesCount.isHidden = true
                 }
                 
-                self.ref.child(self.COMMENTS).child(cell.postKey).observeSingleEvent(of: .value, with: { (snapshot) in
+                self.commentsRef.child(cell.postKey).observeSingleEvent(of: .value, with: { (snapshot) in
                     
                     let commentsCount = (snapshot.value as? [String: Any])?.count
                     
@@ -308,29 +289,6 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                             } else {
                                 debugPrint("File Delete Successfully")
                             }
-                        }
-                        
-                        
-                        
-                        self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                            
-                            if let userData = snapshot.value as? [String: Any] {
-                                if let postsList = userData[self.POSTS] as? NSArray as? [String] {
-                                    if postsList.count > 0 {
-                                        var list = postsList
-                                        if list.contains(selectedCell.postKey) {
-                                            list.remove(at: (list.index(of: selectedCell.postKey))!)
-                                            
-                                            var content = [String: Any]()
-                                            content[self.POSTS] = list
-                                            self.ref.child(self.USERS).child(user.uid).updateChildValues(content)
-                                        }
-                                    }
-                                }
-                            }
-                            
-                        }) { (error) in
-                            print(error.localizedDescription)
                         }
                     }
                     actionSheet.addAction(deleteAction)
