@@ -14,6 +14,7 @@ class PostCell: UITableViewCell {
     var author: String = ""
     var currentUserIsLike = false
     var comments: Int = 0
+    var likedList: [String]?
     
     @IBOutlet weak var userPhoto: UIImageView!
     @IBOutlet weak var email: UILabel!

@@ -82,15 +82,42 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 
                 cell.author = postData[self.AUTHOR_UID] as! String
                 
-                self.ref.child(self.USERS).child(postData[self.AUTHOR_UID] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
-                    let value = snapshot.value as? NSDictionary
+                self.ref.child(self.USERS).child(cell.author).observeSingleEvent(of: .value, with: { (snapshot) in
                     
-                    if value?[self.PHOTO_URL] != nil {
-                        DispatchQueue.main.async {
-                            let imageURLString = value?[self.PHOTO_URL] as! String
-                            let url = URL(string: imageURLString)!
-                            cell.userPhoto.sd_setImage(with: url)
+                    if let value = snapshot.value as? [String: Any] {
+                        
+                        if let imageURLString = value[self.PHOTO_URL] {
+                            DispatchQueue.main.async {
+                                let url = URL(string: imageURLString as! String)!
+                                cell.userPhoto.sd_setImage(with: url)
+                            }
                         }
+                        
+                        
+                        
+                        var content = [String: Any]()
+                        
+                        if let postsList = value[self.POSTS] as? NSArray as? [String] {
+                            if postsList.count > 0 {
+                                var list = postsList
+                                if !list.contains(cell.postKey) {
+                                    list.append(cell.postKey)
+                                    content[self.POSTS] = list
+                                }
+                            } else {
+                                var post: [String] = []
+                                post.append(cell.postKey)
+                                content[self.POSTS] = post
+                            }
+                            
+                            self.ref.child(self.USERS).child(cell.author).updateChildValues(content)
+                        } else {
+                            var post: [String] = []
+                            post.append(cell.postKey)
+                            content[self.POSTS] = post
+                            self.ref.child(self.USERS).child(cell.author).updateChildValues(content)
+                        }
+                        
                     }
                     
                 }) { (error) in
@@ -103,33 +130,29 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 let postDate = (postData[self.POST_DATE] as! Int) / 1000
                 cell.publishTime.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(postDate)))
                 
-                let likes = (postData[self.LIKE_POST] as? [String: Any])?.count
-                if likes != nil {
-                    if likes! > 0 {
-                        if likes! > 99 {
+                cell.likedList = postData[self.LIKE_POST] as? NSArray as? [String]
+                if let likedList = cell.likedList {
+                    if likedList.count > 0 {
+                        cell.likesCount.isHidden = false
+                        
+                        if likedList.contains((FIRAuth.auth()?.currentUser)!.uid) {
+                            cell.currentUserIsLike = true
+                            cell.likeImage.isHighlighted = true
+                            cell.likesCount.textColor = UIColor.white
+                        } else {
+                            cell.currentUserIsLike = false
+                            cell.likeImage.isHighlighted = false
+                            cell.likesCount.textColor = UIColor.red
+                        }
+                        
+                        if likedList.count > 99 {
                             cell.likesCount.text = "99+"
                         } else {
-                            cell.likesCount.text = "\(likes!)"
+                            cell.likesCount.text = "\(likedList.count)"
                         }
-                    }
-                }
-                
-                self.ref.child(self.POSTS).child(cell.postKey).child(self.LIKE_POST).child((FIRAuth.auth()?.currentUser)!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                    
-                    let userLiked = snapshot.value as? [String: Any]!
-                    
-                    if userLiked == nil {
-                        cell.currentUserIsLike = false
-                        cell.likeImage.isHighlighted = false
-                        cell.likesCount.textColor = UIColor.red
                     } else {
-                        cell.currentUserIsLike = true
-                        cell.likeImage.isHighlighted = true
-                        cell.likesCount.textColor = UIColor.white
+                        cell.likesCount.isHidden = true
                     }
-                    
-                }) { (error) in
-                    print(error.localizedDescription)
                 }
                 
                 self.ref.child(self.COMMENTS).child(cell.postKey).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -165,15 +188,12 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 if postData[self.POST_CONTENT] != nil {
                     cell.postContent.text = postData[self.POST_CONTENT] as? String
                 }
+                
             }
             
             return cell
         }
-//        ref.observe(.value, with: { snapshot in
-//            if let value = snapshot.value as? [String: Any] {
-//                debugPrint(value)
-//            }
-        //        })
+        
         ref.observe(.childAdded, with: { snapshot in
             if let value = snapshot.value as? [String: Any] {
                 debugPrint(value)
@@ -208,15 +228,22 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 }
                 
                 let likeAction = UIAlertAction(title: likePostTitle, style: .default) { anctopn in
-                    var post = [String: Any]()
+                    var liked: [String] = []
+                    liked.append(user.uid)
                     var content = [String: Any]()
-                    content[self.LIKE_DATE] = self.dateFormatter.string(from: Date())
-                    post[user.uid] = content
                     
-                    if selectedCell.currentUserIsLike {
-                        self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.LIKE_POST).child(user.uid).removeValue()
+                    if let likedList = selectedCell.likedList {
+                        if likedList.contains(user.uid) {
+                            selectedCell.likedList?.remove(at: (selectedCell.likedList?.index(of: user.uid))!)
+                        } else {
+                            selectedCell.likedList?.append(user.uid)
+                        }
+                        
+                        content[self.LIKE_POST] = selectedCell.likedList
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).updateChildValues(content)
                     } else {
-                        self.ref.child(self.POSTS).child(selectedCell.postKey).child(self.LIKE_POST).updateChildValues(post)
+                        content[self.LIKE_POST] = liked
+                        self.ref.child(self.POSTS).child(selectedCell.postKey).updateChildValues(content)
                     }
                     
                 }
@@ -281,6 +308,29 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                             } else {
                                 debugPrint("File Delete Successfully")
                             }
+                        }
+                        
+                        
+                        
+                        self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                            
+                            if let userData = snapshot.value as? [String: Any] {
+                                if let postsList = userData[self.POSTS] as? NSArray as? [String] {
+                                    if postsList.count > 0 {
+                                        var list = postsList
+                                        if list.contains(selectedCell.postKey) {
+                                            list.remove(at: (list.index(of: selectedCell.postKey))!)
+                                            
+                                            var content = [String: Any]()
+                                            content[self.POSTS] = list
+                                            self.ref.child(self.USERS).child(user.uid).updateChildValues(content)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }) { (error) in
+                            print(error.localizedDescription)
                         }
                     }
                     actionSheet.addAction(deleteAction)
@@ -377,6 +427,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 post[postKey] = content
                 
                 self.ref.child(self.POSTS).updateChildValues(post)
+                
             }
             
             uploadTask.observe(.progress, handler: { (snapshot) in

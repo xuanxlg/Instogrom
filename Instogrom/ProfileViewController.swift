@@ -16,6 +16,7 @@ import SVProgressHUD
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     let USERS: String = "users"
+    let POSTS: String = "posts"
     let EMAIL: String = "email"
     let IS_EMAIL_VERIFIED: String = "is_email_verified"
     let DISPLAY_NAME: String = "display_name"
@@ -23,6 +24,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     let PHOTO_URL: String = "photo_url"
     let REFRESH_TOKEN: String = "refresh_token"
     let SIGN_UP_TIME: String = "sign_up_time"
+    let SIGN_IN_TIME: String = "sign_in_time"
+    
+    @IBOutlet weak var userId: UILabel!
+    @IBOutlet weak var userEmail: UILabel!
+    @IBOutlet weak var userSignUp: UILabel!
+    @IBOutlet weak var userLastSignIn: UILabel!
+    @IBOutlet weak var userPostCount: UILabel!
     
     let dateFormatter = DateFormatter()
     
@@ -36,20 +44,53 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         super.viewDidLoad()
         
         ref = FIRDatabase.database().reference()
+        
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
         DispatchQueue.main.async {
             self.userIcon.frame.size = CGSize(width: (self.userIcon.frame.size.width), height: (self.userIcon.frame.size.width))
             
             let user = (FIRAuth.auth()?.currentUser)!
             self.ref.child(self.USERS).child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                let value = snapshot.value as? NSDictionary
                 
-                if value?[self.PHOTO_URL] != nil {
-                    DispatchQueue.main.async {
-                        let url = URL(string: value?[self.PHOTO_URL] as! String)
+                self.userId.text = snapshot.key
+                
+                if let userData = snapshot.value as? [String: Any] {
+                    
+                    if let email = userData[self.EMAIL] {
+                        self.userEmail.text = email as? String
+                    }
+                    
+                    if let signUpDate = userData[self.SIGN_UP_TIME] {
+                        let signUp = (signUpDate as! Int) / 1000
+                        self.userSignUp.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(signUp)))
+                    }
+                    
+                    if let signInDate = userData[self.SIGN_IN_TIME] {
+                        let lastSignIn = (signInDate as! Int) / 1000
+                        self.userLastSignIn.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(lastSignIn)))
+                    } else {
+                        self.userLastSignIn.text = self.userSignUp.text
+                    }
+                    
+                    if let photoUrl = userData[self.PHOTO_URL] {
+                        let url = URL(string: photoUrl as! String)
                         self.showPhoto(url: url!)
                     }
+                    
+                    if let postsList = userData[self.POSTS] as? NSArray as? [String] {
+                        if postsList.count > 0 {
+                            self.userPostCount.text = "\(postsList.count)"
+                        } else {
+                            self.userPostCount.text = "0"
+                        }
+                    } else {
+                        self.userPostCount.text = "0"
+                    }
+                    
                 }
+                
+                
                 
             }) { (error) in
                 print(error.localizedDescription)
@@ -163,48 +204,45 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     private func showPhoto(url: URL) {
         print("url: \(url)")
-        if url != nil {
-            // Creating a session object with the default configuration.
-            // You can read more about it here https://developer.apple.com/reference/foundation/urlsessionconfiguration
-            let session = URLSession(configuration: .default)
+        
+        let session = URLSession(configuration: .default)
+        
+        SVProgressHUD.setDefaultMaskType(.black)
+        SVProgressHUD.show()
+        
+        // Define a download task. The download task will download the contents of the URL as a Data object and then you can do what you wish with that data.
+        let downloadPicTask = session.dataTask(with: url) { (data, response, error) in
             
-            SVProgressHUD.setDefaultMaskType(.black)
-            SVProgressHUD.show()
+            SVProgressHUD.dismiss()
             
-            // Define a download task. The download task will download the contents of the URL as a Data object and then you can do what you wish with that data.
-            let downloadPicTask = session.dataTask(with: url) { (data, response, error) in
-                
-                SVProgressHUD.dismiss()
-                
-                // The download has finished.
-                if let e = error {
-                    print("Error downloading cat picture: \(e)")
-                } else {
-                    // No errors found.
-                    // It would be weird if we didn't have a response, so check for that too.
-                    if let res = response as? HTTPURLResponse {
-                        print("Downloaded cat picture with response code \(res.statusCode)")
-                        if let imageData = data {
-                            // Finally convert that Data into an image and do what you wish with it.
-                            //                            self.imageView.image = UIImage(data: imageData)
-                            DispatchQueue.main.async {
-                                let urlImage = UIImage(data: imageData)
-                                
-                                self.userIcon.image = urlImage
-                            }
+            // The download has finished.
+            if let e = error {
+                print("Error downloading cat picture: \(e)")
+            } else {
+                // No errors found.
+                // It would be weird if we didn't have a response, so check for that too.
+                if let res = response as? HTTPURLResponse {
+                    print("Downloaded cat picture with response code \(res.statusCode)")
+                    if let imageData = data {
+                        // Finally convert that Data into an image and do what you wish with it.
+                        //                            self.imageView.image = UIImage(data: imageData)
+                        DispatchQueue.main.async {
+                            let urlImage = UIImage(data: imageData)
                             
-                            // Do something with your image.
-                        } else {
-                            print("Couldn't get image: Image is nil")
+                            self.userIcon.image = urlImage
                         }
+                        
+                        // Do something with your image.
                     } else {
-                        print("Couldn't get response code for some reason")
+                        print("Couldn't get image: Image is nil")
                     }
+                } else {
+                    print("Couldn't get response code for some reason")
                 }
             }
-            
-            downloadPicTask.resume()
         }
+        
+        downloadPicTask.resume()
     }
     
     @IBAction func resetPassword(_ sender: Any) {

@@ -51,7 +51,7 @@ class SignInViewController: UIViewController {
             }
             
             var childUpdates = [String: Any]()
-            childUpdates[self.SIGN_IN_TIME] = String(Int(Date().timeIntervalSince1970 * 1000))
+            childUpdates[self.SIGN_IN_TIME] = Int(Date().timeIntervalSince1970 * 1000)
             self.ref.child(self.USERS).child(user.uid).updateChildValues(childUpdates)
             
             print("Sign In success")

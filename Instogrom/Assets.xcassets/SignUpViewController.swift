@@ -73,7 +73,7 @@ class SignUpViewController: UIViewController {
             userInfo[self.PROVIDER_ID] = user.providerID as Any
             userInfo[self.PHOTO_URL] = user.photoURL as Any
             userInfo[self.REFRESH_TOKEN] = user.refreshToken as Any
-            userInfo[self.SIGN_UP_TIME] = String(Int(Date().timeIntervalSince1970 * 1000))
+            userInfo[self.SIGN_UP_TIME] = Int(Date().timeIntervalSince1970 * 1000)
             newUser[user.uid] = userInfo
             
             self.ref.child(self.USERS).updateChildValues(newUser)
