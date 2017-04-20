@@ -89,10 +89,10 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                     if let value = snapshot.value as? [String: Any] {
                         
                         if let imageURLString = value[self.PHOTO_URL] {
-                            DispatchQueue.main.async {
-                                let url = URL(string: imageURLString as! String)!
-                                cell.userPhoto.sd_setImage(with: url)
-                            }
+                            let url = URL(string: imageURLString as! String)
+                            cell.userPhoto.sd_setImage(with: url!)
+                        } else {
+                            cell.userPhoto.image = UIImage(named: "person_icon")
                         }
                         
                     }
@@ -103,7 +103,6 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 
                 cell.email.text = postData[self.EMAIL] as? String
                 
-                debugPrint("\(postData[self.POST_DATE]!)")
                 let postDate = (postData[self.POST_DATE] as! Int) / 1000
                 cell.publishTime.text = self.dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(postDate)))
                 
@@ -162,13 +161,12 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                     print(error.localizedDescription)
                 }
                 
-                let imageURLString = postData[self.IMAGE_URL] as! String
-                let imageURL = URL(string: imageURLString)!
-                cell.photoImage.sd_setImage(with: imageURL)
-                
-                if postData[self.POST_CONTENT] != nil {
-                    cell.postContent.text = postData[self.POST_CONTENT] as? String
+                if let imageURLString = postData[self.IMAGE_URL] {
+                    let imageURL = URL(string: imageURLString as! String)!
+                    cell.photoImage.sd_setImage(with: imageURL)
                 }
+                
+                cell.postContent.text = postData[self.POST_CONTENT] as? String
                 
             }
             
