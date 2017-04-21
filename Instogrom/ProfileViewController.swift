@@ -96,6 +96,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let navigationController: UINavigationController = self.tabBarController?.viewControllers?[0] as! UINavigationController
+        navigationController.popToRootViewController(animated: false)
+    }
 
     @IBAction func photo(_ sender: Any) {
         let picker = UIImagePickerController()
@@ -215,26 +222,37 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             // The download has finished.
             if let e = error {
+                self.userIcon.image = UIImage(named: "person_icon")
                 print("Error downloading cat picture: \(e)")
             } else {
                 // No errors found.
                 // It would be weird if we didn't have a response, so check for that too.
                 if let res = response as? HTTPURLResponse {
                     print("Downloaded cat picture with response code \(res.statusCode)")
-                    if let imageData = data {
-                        // Finally convert that Data into an image and do what you wish with it.
-                        //                            self.imageView.image = UIImage(data: imageData)
-                        DispatchQueue.main.async {
-                            let urlImage = UIImage(data: imageData)
+                    
+                    let responseCode = res.statusCode
+                    
+                    if responseCode == 200 {
+                        if let imageData = data {
+                            // Finally convert that Data into an image and do what you wish with it.
+                            //                            self.imageView.image = UIImage(data: imageData)
+                            DispatchQueue.main.async {
+                                let urlImage = UIImage(data: imageData)
+                                
+                                self.userIcon.image = urlImage
+                            }
                             
-                            self.userIcon.image = urlImage
+                            // Do something with your image.
+                        } else {
+                            self.userIcon.image = UIImage(named: "person_icon")
+                            print("Couldn't get image: Image is nil")
                         }
-                        
-                        // Do something with your image.
                     } else {
-                        print("Couldn't get image: Image is nil")
+                        self.userIcon.image = UIImage(named: "person_icon")
                     }
+                    
                 } else {
+                    self.userIcon.image = UIImage(named: "person_icon")
                     print("Couldn't get response code for some reason")
                 }
             }

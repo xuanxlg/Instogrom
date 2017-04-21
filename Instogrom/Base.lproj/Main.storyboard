@@ -15,7 +15,7 @@
         <!--Instogrom-->
         <scene sceneID="ejV-uA-P7m">
             <objects>
-                <tableViewController id="jAD-b4-bKp" customClass="FeedViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="Posts" id="jAD-b4-bKp" customClass="FeedViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="440" sectionHeaderHeight="28" sectionFooterHeight="28" id="FVq-3c-U0N">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -203,7 +203,6 @@
                                     <outlet property="postContent" destination="6pq-vs-ad5" id="eXh-YA-gSc"/>
                                     <outlet property="publishTime" destination="hQv-Hh-sd5" id="Ydd-OI-pzQ"/>
                                     <outlet property="userPhoto" destination="xd7-GH-cQf" id="fS4-cP-Awn"/>
-                                    <segue destination="CYw-id-05O" kind="show" identifier="showMessages" id="5Sn-dw-jAM"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -234,7 +233,7 @@
         <!--Comments-->
         <scene sceneID="UPS-Pw-WwU">
             <objects>
-                <viewController id="CYw-id-05O" customClass="CommentsViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Comments" id="CYw-id-05O" customClass="CommentsViewController" customModule="Instogrom" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="JKg-HV-uTo"/>
                         <viewControllerLayoutGuide type="bottom" id="dvt-4R-vjH"/>
@@ -243,7 +242,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="d2V-Du-Ez6">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Comments" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="d2V-Du-Ez6">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>

@@ -28,6 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("User \(user.displayName ?? "") is log in")
                 let viewController = storeBoard.instantiateViewController(withIdentifier: "MainFlow")
                 self.window?.rootViewController = viewController
+                
+                let tabBarController = self.window?.rootViewController as! UITabBarController
+                
             } else {
                 print("User is log out")
                 let viewController = storeBoard.instantiateViewController(withIdentifier: "SignInFlow")

@@ -42,19 +42,26 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        let cell = sender as! UITableViewCell
-        let indexPath = tableView.indexPath(for: cell)
-        let selectedCell = tableView.cellForRow(at: indexPath!) as! PostCell
-        debugPrint("selectedCell.messages: \(selectedCell.comments)")
-        if selectedCell.comments > 0 {
-            if segue.identifier == "showMessages" {
-                let contentVC = segue.destination as! CommentsViewController
-                contentVC.postKey = selectedCell.postKey
-            }
-        } else {
-            
-        }
+//        let cell = sender as! UITableViewCell
+//        let indexPath = tableView.indexPath(for: cell)
+//        let selectedCell = tableView.cellForRow(at: indexPath!) as! PostCell
+//        if segue.identifier == "Comments" {
+//            let contentVC = segue.destination as! CommentsViewController
+//            contentVC.postKey = selectedCell.postKey
+//        }
         
+    }
+    
+    func cellTapped(tap: UITapGestureRecognizer) {
+        debugPrint("cellTapped()")
+        let commentsView = tap.view!
+        let indexPath = commentsView.tag
+        let selectedCell = tableView.cellForRow(at: [0, indexPath]) as! PostCell
+        
+        let storeBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        let commentsViewController = storeBoard.instantiateViewController(withIdentifier: "Comments") as! CommentsViewController
+        commentsViewController.postKey = selectedCell.postKey
+        navigationController?.pushViewController(commentsViewController, animated: true)
     }
 
     override func viewDidLoad() {
@@ -98,6 +105,7 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                     }
                     
                 }) { (error) in
+                    cell.userPhoto.image = UIImage(named: "person_icon")
                     print(error.localizedDescription)
                 }
                 
@@ -150,6 +158,12 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                                 cell.commentsCount.text = "\(commentsCount!)"
                             }
                             cell.commentView.isHidden = false
+                            
+                            let tap = UITapGestureRecognizer(target: self, action: #selector(self.cellTapped(tap:)))
+                            cell.commentView.addGestureRecognizer(tap)
+                            cell.commentView.tag = indexPath[1]
+                            cell.commentView.isUserInteractionEnabled = true
+                            
                         } else {
                             cell.commentView.isHidden = true
                         }
@@ -160,6 +174,8 @@ class FeedViewController: UITableViewController, UIImagePickerControllerDelegate
                 }) { (error) in
                     print(error.localizedDescription)
                 }
+                
+                
                 
                 if let imageURLString = postData[self.IMAGE_URL] {
                     let imageURL = URL(string: imageURLString as! String)!
