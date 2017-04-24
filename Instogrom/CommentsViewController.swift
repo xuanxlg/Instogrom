@@ -38,10 +38,14 @@ class CommentsViewController: UIViewController, UITableViewDelegate {
         
         tableView.delegate = self
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
         debugPrint("postKey: \(postKey)")
         
         if postKey != "" {
-         
+            
             ref = FIRDatabase.database().reference()
             messagesRef = ref.child(COMMENTS)
             
